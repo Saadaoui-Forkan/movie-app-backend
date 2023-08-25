@@ -4,6 +4,7 @@ const { check, validationResult } = require('express-validator')
 const User = require('../models/User')
 const bcrypt = require('bcryptjs')
 const jwtHeelpers = require('../utils/jwtHelpers')
+const auth = require('../middlewares/auth')
 
 // @route   POST api/users/register
 // @desc    Register new user
@@ -80,6 +81,21 @@ router.post('/login', [
         console.log(err.message)
         res.status(500).send('Server error')
     }
+})
+
+// @route   GET api/users/me
+// @desc    User Authentification
+// @access  Public
+router.get('/me', auth.check, async(req, res) => {
+    const user = await User.findById(req.userId)
+    res.json({
+        success: true,
+        data: {
+            id: user.id,
+            name: user.name,
+            email: user.email
+        }
+    })
 })
 
 module.exports = router;
