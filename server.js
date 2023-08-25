@@ -4,8 +4,8 @@ const app = express()
 
 app.get('/', (req,res) => res.send('API running'))
 
-app.use('/api/users', require('./api/users'))
-app.use('/api/posts', require('./api/movies'))
+app.use('/api/users', require('./routes/users'))
+app.use('/api/movies', require('./routes/movies'))
 
 const PORT = process.env.PORT || 5000
 
