@@ -29,10 +29,6 @@ const ModelSchema = new mongoose.Schema({
             }
         ],
         default: []
-    },
-    isAdmin: {
-        type: Boolean,
-        default: false
     }
 }, {
     timestamps: true

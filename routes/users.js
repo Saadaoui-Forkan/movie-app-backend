@@ -10,7 +10,7 @@ const auth = require('../middlewares/auth')
 // @desc    Register new user
 // @access  Public
 router.post('/register', [
-        check('name', 'Name is required with 30 or less characters').not().isEmpty().isLength({max: 30}),
+        check('name', 'Name is required with less than 30 characters').not().isEmpty().isLength({max: 30}),
         check('email', 'Please include a valid email').isEmail(),
         check('password', 'Please enter a password with 6 or more characters').isLength({min: 6}),
     ] , async(req, res) => {

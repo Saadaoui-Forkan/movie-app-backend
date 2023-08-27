@@ -64,7 +64,7 @@ router.delete('/:id', [auth.check, admin.check], async(req, res) => {
 // @route   GET api/movies
 // @desc    Get all movies
 // @access  Public
-router.get('/', async(req, res) => {
+router.get('/', auth.check, async(req, res) => {
     const page = req.query?.page || 1
     const limit = 1
     const skip = (page - 1) * limit
@@ -81,13 +81,71 @@ router.get('/', async(req, res) => {
 // @route   GET api/movies/:id
 // @desc    Get a movie informations
 // @access  Public
-router.get('/:id', async(req, res) => {
+router.get('/:id', auth.check, async(req, res) => {
     const { id } = req.params
     const movie = await Movie.findById(id)
     if(!movie) return res.status(404).send()
     res.json({
         success: true,
         data: movie
+    })
+})
+
+// @route   Post api/movies/:id/reviews
+// @desc    Add review
+// @access  Public
+router.post('/:id/reviews', auth.check, async(req,res) => {
+    const { id } = req.params
+    const { comment, rate } = req.body
+    
+    const movie = await Movie.findById(id)
+
+    if(!movie) return res.status(404).send()
+
+    const isRated = movie.reviews.findIndex(m => m.user == req.userId)
+
+    if(isRated>-1) return res.status(403).send({msg: 'Review Is Already Added'})
+
+    const totalRate = movie.reviews.reduce((sum, review) => sum + review.rate ,0)
+
+    const finalRate = (totalRate + rate) / (movie.reviews.length + 1)
+
+    await Movie.updateOne(
+        { _id: id },
+        {
+            $push: {
+                reviews: {
+                    user: req.userId,
+                    comment,
+                    rate
+                }
+            },
+            $set: {
+                rate: finalRate
+            }
+        }
+    )
+
+    res.status(201).json({success: true})
+
+})
+
+// @route   Get api/movies/:id/reviews
+// @desc    Get reviews
+// @access  Public
+router.get('/:id/reviews', async(req,res) => {
+
+    const { id } = req.params
+
+    const movie = await Movie.findById(id)
+        .select('-reviews._id')
+        .populate('reviews.user', 'name')
+
+    if(!movie) return res.status(404).send()
+
+    res.json({
+        success: true,
+        data: movie.reviews
     })
 })
 
