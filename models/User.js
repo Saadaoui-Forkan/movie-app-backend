@@ -20,7 +20,7 @@ const ModelSchema = new mongoose.Schema({
 		{
 			movie: {
 				type: mongoose.Schema.Types.ObjectId,
-				ref: 'MOvie'
+				ref: 'Movie'
 			},
 			watched: Boolean
 		}
