@@ -13,6 +13,7 @@ app.get('/', (req,res) => res.send('API running'))
 
 app.use('/api/users', require('./routes/users'))
 app.use('/api/movies', require('./routes/movies'))
+app.use('/api/watchList', require('./routes/watchList'))
 
 const PORT = process.env.PORT || 8000
 
