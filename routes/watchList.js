@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const Movie = require('../models/Movie')
+// const Movie = require('../models/Movie')
 const User = require('../models/User')
 const auth = require('../middlewares/auth')
 
@@ -24,17 +24,31 @@ router.post('/', auth.check, async(req,res) => {
 })
 
 // @route   DELETE api/watchList
-// @desc    watchList
+// @desc    Delete watchList
 // @access  Public
-router.delete('/:movie', auth.check, (req,res) => {
-    res.send('post')
+router.delete('/:movie', auth.check, async(req,res) => {
+    const { movie } = req.params
+    const user = await User.findById(req.userId)
+    user.watchList = user.watchList.filter(e => e.movie != movie)
+    await user.save()
+    res.json({
+        success: true
+    })
 })
 
 // @route   GET api/watchList
-// @desc    watchList
+// @desc    Get list of watchList
 // @access  Public
-router.get('/', auth.check, (req,res) => {
-    res.send('post')
+router.get('/', auth.check, async(req,res) => {
+    const user = await User.findById(req.userId)
+        .select('-watchList._id')
+        .populate('watchList.movie', ['name', 'category', 'rate'])
+
+    res.json({
+        success: true,
+        data: user.watchList
+    })
+
 })
 
 module.exports = router;

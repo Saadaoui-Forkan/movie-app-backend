@@ -42,6 +42,6 @@ ModelSchema.set('toJSON', {
     }
 })
 
-const Model = mongoose.model('Movie', ModelSchema)
+const Model = mongoose.model('Movie', ModelSchema);
 
 module.exports = Model
